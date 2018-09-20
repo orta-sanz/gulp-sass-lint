@@ -59,7 +59,7 @@ var sassLint = function (options) {
   return compile;
 }
 
-sassLint.format = function (writable) {
+sassLint.format = function (failCallBack, writable) {
   var compile = through.obj(function (file, encoding, cb) {
     if (file.isNull()) {
       return cb();
@@ -74,6 +74,8 @@ sassLint.format = function (writable) {
       writable.write(result);
     }
     else {
+      var resultFileObj = sassLint.errorObj(file)
+      failCallBack && resultFileObj && failCallBack(resultFileObj)
       lint.outputResults(file.sassLint, file.userOptions, file.configFile);
     }
 
@@ -116,6 +118,21 @@ sassLint.failOnError = function () {
   });
 
   return compile;
+}
+
+sassLint.errorObj = function(file) {
+  var obj = undefined
+  for (var i = 0; i <= file.sassLint.length; i++) {
+    if (file.sassLint[i]) {
+      if(file.sassLint[i].errorCount >= 1) {
+        obj = {
+          file: file.sassLint[i].filePath,
+          messages: file.sassLint[i].messages
+        }
+      }
+    }
+  }
+  return obj
 }
 
 module.exports = sassLint;

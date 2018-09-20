@@ -132,9 +132,11 @@ gulp.task('default', function () {
 ```
 ---
 
-### sassLint.format(writable)
+### sassLint.format(callback, writable)
 
 Formats the results dependent on your config file or the options you provided to the sassLint task above. The default format is `stylish` but you can choose any of the others that SassLint provides, see the [docs](https://github.com/sasstools/sass-lint/blob/master/docs/options/formatter.md).
+
+You can use a callback to print or notify all the errors.
 
 You can also choose to output to a file from within the options you provide or your config file. See the [output-file docs](https://github.com/sasstools/sass-lint/blob/master/docs/options/output-file.md)
 
@@ -148,7 +150,7 @@ gulp.task('lint_sass_jenkins', function () {
                 formatter: 'checkstyle'
             }
         }))
-        .pipe(sassLint.format(file));
+        .pipe(sassLint.format(false, file));
     stream.on('finish', function() {
         file.end();
     });
